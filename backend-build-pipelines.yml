@@ -9,7 +9,7 @@ trigger:
       - master
   paths:
     include:
-      - backend/*
+      - pet-cleanic-app/*
 
 pr: none # will disable PR builds (but not CI builds)
 
@@ -32,7 +32,7 @@ steps:
 
   - task: Maven@3
     inputs:
-      mavenPomFile: 'pom.xml'
+      mavenPomFile: 'pet-cleanic-app/pom.xml'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       javaHomeOption: 'JDKVersion'
