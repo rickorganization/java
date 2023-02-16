@@ -32,7 +32,7 @@ steps:
 
   - task: Maven@3
     inputs:
-      mavenPomFile: 'pet-cleanic-app/pom.xml'
+      mavenPomFile: '/home/vsts/work/1/s/pet-cleanic-app/pom.xml'
       publishJUnitResults: true
       testResultsFiles: '**/surefire-reports/TEST-*.xml'
       javaHomeOption: 'JDKVersion'
