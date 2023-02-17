@@ -377,6 +377,24 @@
                 </lifecycleMappingMetadata>
               </configuration>
             </plugin>
+			<plugin>
+                <artifactId>jib-maven-plugin</artifactId>
+                <groupId>com.google.cloud.tools</groupId>
+                <version>${jib-maven-plugin.version}</version>
+                <configuration>
+                    <container>
+                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                    </container>
+                    <from>
+                        <image>${jdk.image}</image>
+                    </from>
+                    <to>
+                        <image>
+                            ${azure.image.prefix}/${project.artifactId}:${docker.image.tag}
+                        </image>
+                    </to>
+                </configuration>
+            </plugin>
           </plugins>
         </pluginManagement>
       </build>
