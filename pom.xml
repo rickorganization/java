@@ -123,11 +123,43 @@
       <groupId>jakarta.xml.bind</groupId>
       <artifactId>jakarta.xml.bind-api</artifactId>
     </dependency>
-
   </dependencies>
+  
+  <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>${spring-cloud.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
 
   <build>
     <plugins>
+	
+	  <plugin>
+        <artifactId>jib-maven-plugin</artifactId>
+		<groupId>com.google.cloud.tools</groupId>
+		<version>${jib-maven-plugin.version}</version>
+		<configuration>
+			<container>
+				<creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+			</container>
+			<from>
+				<image>${jdk.image}</image>
+			</from>
+			<to>
+				<image>
+					${azure.image.prefix}/${project.artifactId}:${docker.image.tag}
+				</image>
+			</to>
+		</configuration>
+      </plugin>
+	
       <plugin>
         <groupId>io.spring.javaformat</groupId>
         <artifactId>spring-javaformat-maven-plugin</artifactId>
@@ -339,24 +371,6 @@
           <plugins>
             <!-- This plugin's configuration is used to store Eclipse m2e settings
    only. It has no influence on the Maven build itself. -->
-            <plugin>
-                <artifactId>jib-maven-plugin</artifactId>
-                <groupId>com.google.cloud.tools</groupId>
-                <version>${jib-maven-plugin.version}</version>
-                <configuration>
-                    <container>
-                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-                    </container>
-                    <from>
-                        <image>${jdk.image}</image>
-                    </from>
-                    <to>
-                        <image>
-                            ${azure.image.prefix}/${project.artifactId}:${docker.image.tag}
-                        </image>
-                    </to>
-                </configuration>
-            </plugin>
             <plugin>
               <groupId>org.eclipse.m2e</groupId>
               <artifactId>lifecycle-mapping</artifactId>
