@@ -340,6 +340,24 @@
             <!-- This plugin's configuration is used to store Eclipse m2e settings
    only. It has no influence on the Maven build itself. -->
             <plugin>
+                <artifactId>jib-maven-plugin</artifactId>
+                <groupId>com.google.cloud.tools</groupId>
+                <version>${jib-maven-plugin.version}</version>
+                <configuration>
+                    <container>
+                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
+                    </container>
+                    <from>
+                        <image>${jdk.image}</image>
+                    </from>
+                    <to>
+                        <image>
+                            ${azure.image.prefix}/${project.artifactId}:${docker.image.tag}
+                        </image>
+                    </to>
+                </configuration>
+            </plugin>
+            <plugin>
               <groupId>org.eclipse.m2e</groupId>
               <artifactId>lifecycle-mapping</artifactId>
               <version>1.0.0</version>
@@ -388,24 +406,6 @@
                   </pluginExecutions>
                 </lifecycleMappingMetadata>
               </configuration>
-            </plugin>
-			<plugin>
-                <artifactId>jib-maven-plugin</artifactId>
-                <groupId>com.google.cloud.tools</groupId>
-                <version>${jib-maven-plugin.version}</version>
-                <configuration>
-                    <container>
-                        <creationTime>USE_CURRENT_TIMESTAMP</creationTime>
-                    </container>
-                    <from>
-                        <image>${jdk.image}</image>
-                    </from>
-                    <to>
-                        <image>
-                            ${azure.image.prefix}/${project.artifactId}:${docker.image.tag}
-                        </image>
-                    </to>
-                </configuration>
             </plugin>
           </plugins>
         </pluginManagement>
