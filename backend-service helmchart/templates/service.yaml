@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "dufry-gateway-service.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+{{ include "dufry-gateway-service.labels" . | indent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: {{ .Values.targetPort }}
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: {{ include "dufry-gateway-service.name" . }}

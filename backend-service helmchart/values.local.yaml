@@ -1,0 +1,19 @@
+# Local values for dufry-gateway-service.
+replicaCount: 1
+
+imagePullSecrets: [{name: ''}]
+
+env:
+  profile: none
+  db:
+    url: 
+    username: 
+    password: 
+
+ingress:
+  enabled: true
+  annotations:
+    kubernetes.io/ingress.class: 
+  hosts:
+    - host: 
+      paths: 
