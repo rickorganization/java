@@ -42,5 +42,5 @@ stages:
               effectivePomSkip: false
               goals: 'compile jib:build'
               # compile jib:build -pl service-template
-              options: '-Djib.to.auth.username=$(registry_username) -Djib.to.auth.password=$(registry_password) -DskipTests'
+              options: '-Djib.to.auth.username=dufryACR -Djib.to.auth.password=pT3bEflbPDCv0qKZ/y4HnF268SKBlPN0tcQ32M6RnB+ACRBCdVJH -DskipTests'
 
