@@ -31,7 +31,7 @@
     <spring-format.version>0.0.31</spring-format.version>
 	
     <azure.image.prefix>dufryacr.azurecr.io</azure.image.prefix>
-    <jdk.image>taoqn/temurin-17-jdk-maven:latest</jdk.image>
+    <jdk.image>openjdk:17.0-jdk-oracle</jdk.image>
 <!--        <jdk.image>eclipse-temurin:17-jdk-alpine</jdk.image>-->
     <docker.image.tag>latest</docker.image.tag>
 	
