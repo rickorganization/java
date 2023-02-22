@@ -21,10 +21,6 @@ stages:
         pool:
           vmImage: $(vmImageName)
         steps:
-          - task: WhiteSource@21
-            inputs:
-              cwd: '$(System.DefaultWorkingDirectory)'
-              projectName: 'pet-clinic'
           - task: Cache@2
             inputs:
               key: 'maven | "$(Agent.OS)" | **/pom.xml'
@@ -33,4 +29,18 @@ stages:
                 maven
               path: $(MAVEN_CACHE_FOLDER)
             displayName: Cache Maven local repo
-          
+          - task: Maven@3
+            inputs:
+              mavenPomFile: 'pom.xml'
+              publishJUnitResults: false
+              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '1.17'
+              mavenVersionOption: 'Default'
+              mavenOptions: '-Xmx3072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+              mavenAuthenticateFeed: false
+              effectivePomSkip: false
+              goals: 'compile jib:build'
+              # compile jib:build -pl service-template
+              options: '-Djib.to.auth.username=$(registry_name) -Djib.to.auth.password=$(registry_password) -DskipTests'
+
