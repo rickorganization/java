@@ -21,6 +21,10 @@ stages:
         pool:
           vmImage: $(vmImageName)
         steps:
+          - task: WhiteSource@21
+            inputs:
+              cwd: '$(System.DefaultWorkingDirectory)'
+              projectName: 'pet-clinic'
           - task: Cache@2
             inputs:
               key: 'maven | "$(Agent.OS)" | **/pom.xml'
