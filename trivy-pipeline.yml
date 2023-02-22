@@ -1,0 +1,72 @@
+trigger: none
+ 
+pool:
+  vmImage: 'ubuntu-latest'
+variables:
+  registry: 'dockerscanregistry.azurecr.io'
+  tag: '$(Build.BuildId)'
+  imageName: 'azuredevops-trivyscan'
+parameters:
+  - name: ForceImagePushImageWithVulnerability
+    values:
+      - true
+      - false
+    default: false
+    displayName: Force Image Push Image With Vulnerability
+steps:
+  - task: CmdLine@2
+    displayName: Build Image
+    inputs:
+      script: 'docker build -t "$(registry)/$(imageName):$(tag)" $(System.DefaultWorkingDirectory)/basic'
+  - task: CmdLine@2
+    displayName: Show Image
+    inputs:
+      script: 'docker image ls'
+  - task: CmdLine@2
+    displayName: Install Trivy
+    inputs:
+      script: |
+        sudo apt-get install wget apt-transport-https gnupg lsb-release
+        wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+        echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+        sudo apt-get update
+        sudo apt-get install trivy
+  - task: CmdLine@2
+    displayName: "Run trivy scan"
+    inputs:
+      script: |
+          trivy image --format template --template "@contrib/junit.tpl" -o test.xml $(registry)/$(imageName):$(tag)
+  - ${{ if eq(parameters.ForceImagePushImageWithVulnerability, 'false') }}:
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/test.xml'
+        mergeTestResults: true
+        failTaskOnFailedTests: true
+        testRunTitle: 'Trivy - Vulnerabilities Summary'
+  - ${{ if eq(parameters.ForceImagePushImageWithVulnerability, 'true') }}:
+    - task: PublishTestResults@2
+      inputs:
+        testResultsFormat: 'JUnit'
+        testResultsFiles: '**/test.xml'
+        mergeTestResults: true
+        failTaskOnFailedTests: false
+        testRunTitle: 'Trivy - Vulnerabilities Summary'
+  - task: AzureCLI@2
+    condition: succeeded()
+    inputs:
+      azureSubscription: 'connection-contributor'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'az acr login --name dockerscanregistry'
+  - task: DockerInstaller@0
+    condition: succeeded()
+    inputs:
+      dockerVersion: '17.09.0-ce'
+  - task: AzureCLI@2
+    condition: succeeded()
+    inputs:
+      azureSubscription: 'connection-contributor'
+      scriptType: 'bash'
+      scriptLocation: 'inlineScript'
+      inlineScript: 'docker push $(registry)/$(imageName):$(tag)'
