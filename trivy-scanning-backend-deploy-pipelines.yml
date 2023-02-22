@@ -1,0 +1,97 @@
+# Release the Backend to Azure Registry
+
+trigger: none # will disable CI builds entirely
+
+pr: none # will disable PR builds (but not CI builds)
+
+variables:
+  MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
+  MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  target: $(build.artifactstagingdirectory)
+  artifact: trivy-results
+
+
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
+
+
+stages:
+  - stage: Deploy_BackEnd
+    displayName: Deploy and Push BackEnd Stage
+    jobs:
+      - job: Deploy
+        displayName: Deploy
+        pool:
+          vmImage: $(vmImageName)
+        steps:
+          - task: Cache@2
+            inputs:
+              key: 'maven | "$(Agent.OS)" | **/pom.xml'
+              restoreKeys: |
+                maven | "$(Agent.OS)"
+                maven
+              path: $(MAVEN_CACHE_FOLDER)
+            displayName: Cache Maven local repo
+          - task: Maven@3
+            inputs:
+              mavenPomFile: 'pom.xml'
+              publishJUnitResults: false
+              testResultsFiles: '**/surefire-reports/TEST-*.xml'
+              javaHomeOption: 'JDKVersion'
+              jdkVersionOption: '1.17'
+              mavenVersionOption: 'Default'
+              mavenOptions: '-Xmx3072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+              mavenAuthenticateFeed: false
+              effectivePomSkip: false
+              goals: 'compile jib:build'
+              # compile jib:build -pl service-template
+              options: '-Djib.to.auth.username=$(registry_name) -Djib.to.auth.password=$(registry_password) -DskipTests'
+			  
+		  - task: CmdLine@2
+			displayName: Download and Install Trivy
+			inputs:
+			  script: |
+				sudo apt-get install wget apt-transport-https gnupg lsb-release
+				wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+				echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+				sudo apt-get update
+				sudo apt-get install trivy
+				trivy -v
+				pwd
+          
+		  
+		  - task: CmdLine@2
+			displayName: Download and Install Trivy
+			inputs:
+			  script: |
+				trivy image --exit-code 0 --severity LOW,MEDIUM ${DOCKER_USERNAME}/${DOCKER_USERNAME}:${SEMAPHORE_WORKFLOW} > low-mid.txt
+				trivy image --exit-code 0 --severity HIGH,CRITICAL ${DOCKER_USERNAME}/${DOCKER_USERNAME}:${SEMAPHORE_WORKFLOW} > hight-crit.txt
+				ls -l
+				cp -rvf *.txt ${target}
+		
+
+		  - task: PublishPipelineArtifact@1
+			displayName: Publish pipeline Artifacts
+			inputs:
+			  targetPath: '$(target)'
+			  artifactType: 'pipeline'
+			  artifactName: '$(artifact)'
+	
+	
+		# Download an artifact named 'WebApp' to 'bin' in $(Build.SourcesDirectory)
+		  - task: DownloadPipelineArtifact@2
+			displayName: Download pipeline Artifacts
+			inputs:
+			  buildType: 'current'
+			  artifactName: '$(artifact)'
+			  targetPath: $(System.ArtifactsDirectory)
+
+
+
+
+
+  
+
+
+		
+		
