@@ -45,7 +45,7 @@ stages:
               effectivePomSkip: false
               goals: 'compile jib:build'
               # compile jib:build -pl service-template
-              #options: '-Djib.to.auth.username=$(registry_name) -Djib.to.auth.password=$(registry_password) -DskipTests'  
+              options: '-Djib.to.auth.username=$(registry_name) -Djib.to.auth.password=$(registry_password) -DskipTests'  
           - task: PublishBuildArtifacts@1
             inputs:
               PathtoPublish: '$(Build.ArtifactStagingDirectory)'
