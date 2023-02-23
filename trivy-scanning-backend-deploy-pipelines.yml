@@ -45,36 +45,9 @@ stages:
               effectivePomSkip: false
               goals: 'compile jib:build'
               # compile jib:build -pl service-template
-              options: '-Djib.to.auth.username=$(registry_name) -Djib.to.auth.password=$(registry_password) -DskipTests'  
-          - task: CmdLine@2
-            displayName: Install Trivy
+              #options: '-Djib.to.auth.username=$(registry_name) -Djib.to.auth.password=$(registry_password) -DskipTests'  
+          - task: PublishBuildArtifacts@1
             inputs:
-              script: |
-                sudo apt-get install wget apt-transport-https gnupg lsb-release
-                wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
-                echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
-                sudo apt-get update
-                sudo apt-get install trivy
-                trivy -v
-                pwd
-          - task: CmdLine@2
-            displayName: Download and Install Trivy
-            inputs:
-              script: |
-                trivy image --exit-code 0 --severity LOW,MEDIUM spring-petclinic:latest > low-mid.txt
-                trivy image --exit-code 0 --severity HIGH,CRITICAL spring-petclinic:latest > hight-crit.txt
-                ls -l
-                cp -rvf *.txt ${target}
-          - task: PublishPipelineArtifact@1
-            displayName: Publish pipeline Artifacts
-            inputs:
-              targetPath: '$(target)'
-              artifactType: 'pipeline'
-              artifactName: '$(artifact)'
-              # Download an artifact named 'WebApp' to 'bin' in $(Build.SourcesDirectory)
-          - task: DownloadPipelineArtifact@2
-            displayName: Download pipeline Artifacts
-            inputs:
-              buildType: 'current'
-              artifactName: '$(artifact)'
-              targetPath: $(System.ArtifactsDirectory)
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
