@@ -46,8 +46,8 @@ stages:
               goals: 'compile jib:build'
               # compile jib:build -pl service-template
               options: '-Djib.to.auth.username=$(registry_name) -Djib.to.auth.password=$(registry_password) -DskipTests'  
-          - task: PublishBuildArtifacts@1
+          - task: PublishPipelineArtifact@1
             inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-              ArtifactName: 'drop'
-              publishLocation: 'Container'
+              targetPath: '$(Pipeline.Workspace)'
+              artifact: 'drop'
+              publishLocation: 'pipeline'
