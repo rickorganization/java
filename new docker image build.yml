@@ -17,6 +17,9 @@ variables:
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
+  tag: '$(Build.BuildId)'
+  imageRepository: 'pet-cleanic-app'
+  RegistryServiceConnection: 'dufryTest-ServiceConnection'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -47,3 +50,13 @@ steps:
       repository: 'pet-cleanic-app'
       command: 'build'
       Dockerfile: "$(dockerfilePath)"
+  
+  - task: Docker@2
+    displayName: BUILD AND PUSH IMAGE TO ACR
+    inputs:
+      command: buildAndPush
+      repository: $(imageRepository)
+      dockerfile: $(dockerfilePath)
+      containerRegistry: $(RegistryServiceConnection)
+      tags: |
+        $(tag)
