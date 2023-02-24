@@ -45,9 +45,10 @@ steps:
       mavenAuthenticateFeed: false
       effectivePomSkip: false
   
-  - task: Docker@2
+  - task: Docker@1
     inputs:
-      containerRegistry: 'dufryacr.azurecr.io'
+      azureSubscriptionEndpoint: dufryTest-ServiceConnection
+      azureContainerRegistry: dufryACR
       repository: 'pet-cleanic-app'
-      command: 'buildAndPush'
+      command: 'Push an image'
       Dockerfile: "$(dockerfilePath)"
