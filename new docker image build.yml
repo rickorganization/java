@@ -45,12 +45,16 @@ steps:
       mavenAuthenticateFeed: false
       effectivePomSkip: false
   
-  - task: Docker@1
-    displayName: Push docker image to container registry
+  - task: Docker@2
     inputs:
-      azureSubscriptionEndpoint: $(RegistryServiceConnection)
+      repository: 'pet-cleanic-app'
+      command: 'build'
+      Dockerfile: "$(dockerfilePath)"
+  
+
+  - task: Docker@1
+    displayName: Push
+    inputs:
+      azureSubscriptionEndpoint: dufryTest-ServiceConnection
       azureContainerRegistry: dufryacr.azurecr.io
-      command: 'buildAndPush' 
-      repository: $(imageRepository)
-      tags: |
-        $(tag)
+      command: 'Push an image'
