@@ -46,4 +46,4 @@ steps:
     inputs:
       repository: 'pet-cleanic-app'
       command: 'build'
-      Dockerfile: "dockerfilePath"
+      Dockerfile: "$(dockerfilePath)"
