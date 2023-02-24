@@ -18,8 +18,7 @@ variables:
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
-  imageRepository: 'pet-cleanic-app'
-  RegistryServiceConnection: 'dufryTest-ServiceConnection'
+  imageRepository: 'dufryTest-ServiceConnection'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -45,18 +44,13 @@ steps:
       mavenOptions: '-Xmx3072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
       mavenAuthenticateFeed: false
       effectivePomSkip: false
-  - task: Docker@2
-    inputs:
-      repository: 'pet-cleanic-app'
-      command: 'build'
-      Dockerfile: "$(dockerfilePath)"
   
   - task: Docker@1
     displayName: Push docker image to container registry
     inputs:
       azureSubscriptionEndpoint: $(RegistryServiceConnection)
       azureContainerRegistry: dufryacr.azurecr.io
-      command: push 
+      command: 'buildAndPush' 
       repository: $(imageRepository)
       tags: |
         $(tag)
