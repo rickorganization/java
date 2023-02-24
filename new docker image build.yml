@@ -16,6 +16,7 @@ pr: none # will disable PR builds (but not CI builds)
 variables:
   MAVEN_CACHE_FOLDER: $(Pipeline.Workspace)/.m2/repository
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -45,4 +46,4 @@ steps:
     inputs:
       repository: 'pet-cleanic-app'
       command: 'buildAndPush'
-      Dockerfile: '**/Dockerfile'
+      Dockerfile: "$(dockerfilePath)"
