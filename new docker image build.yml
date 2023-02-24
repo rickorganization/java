@@ -47,14 +47,7 @@ steps:
   
   - task: Docker@2
     inputs:
+      containerRegistry: 'dufryacr.azurecr.io'
       repository: 'pet-cleanic-app'
-      command: 'build'
+      command: 'buildAndPush'
       Dockerfile: "$(dockerfilePath)"
-  
-
-  - task: Docker@1
-    displayName: Push
-    inputs:
-      azureSubscriptionEndpoint: dufryTest-ServiceConnection
-      azureContainerRegistry: dufryacr.azurecr.io
-      command: 'Push an image'
