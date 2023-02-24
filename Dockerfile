@@ -15,8 +15,8 @@ From eclipse-temurin:17-jre-alpine
 RUN apk add dumb-init
 
 # copy jar from the first stage
-COPY --from=builder project/target/Pet-cleanic-0.0.1-SNAPSHOT.jar Pet-cleanic-0.0.1-SNAPSHOT.jar
+COPY --from=builder /target/spring-petclinic-3.0.0-SNAPSHOT.jar spring-petclinic-3.0.0-SNAPSHOT.jar
 
 EXPOSE 8080
 
-CMD "dumb-init" "java" "-jar" "Pet-cleanic-0.0.1-SNAPSHOT.jar"
+CMD "dumb-init" "java" "-jar" "spring-petclinic-3.0.0-SNAPSHOT.jar"
