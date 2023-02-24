@@ -45,5 +45,5 @@ steps:
   - task: Docker@2
     inputs:
       repository: 'pet-cleanic-app'
-      command: 'buildAndPush'
-      Dockerfile: "$(dockerfilePath)"
+      command: 'build'
+      Dockerfile: '**/Dockerfile'
