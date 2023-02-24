@@ -41,9 +41,8 @@ steps:
       mavenOptions: '-Xmx3072m -Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
       mavenAuthenticateFeed: false
       effectivePomSkip: false
-      
   - task: Docker@2
-            inputs:
-              repository: 'pet-cleanic-app'
-              command: 'buildAndPush'
-              Dockerfile: '**/Dockerfile'
+    inputs:
+      repository: 'pet-cleanic-app'
+      command: 'buildAndPush'
+      Dockerfile: '**/Dockerfile'
