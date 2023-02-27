@@ -18,7 +18,8 @@ variables:
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
-  imageRepository: 'dufryTest-ServiceConnection'
+  imageRepository: 'pet-cleanic-app'
+
 
 pool:
   vmImage: 'ubuntu-latest'
@@ -45,14 +46,11 @@ steps:
       mavenAuthenticateFeed: false
       effectivePomSkip: false
   
+ 
   - task: Docker@2
-    displayName: Build and push anf image to container registry
     inputs:
-      command: buildAndPush
-      repository: $(imageRepository)
-      dockerfile: $(dockerfilePath)
+      repository: 'pet-cleanic-app'
+      command: 'buildAndPush'
+      Dockerfile: $(dockerfilePath)
       containerRegistry: dufryACR
-      arguments: --build-arg profile=$(profile)
-      tags: |
-        $(version)
 
