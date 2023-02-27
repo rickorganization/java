@@ -19,7 +19,8 @@ variables:
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
-  imageRepository: 'pet-cleanic-app'
+  imageRepository: 'spring-petclinic'
+  dockerRegistryServiceConnection: ''
 
 
 pool:
@@ -47,17 +48,13 @@ steps:
       mavenAuthenticateFeed: false
       effectivePomSkip: false
   
-  - task: ACRCredential@0
-    inputs:
-      azureSubscriptionEndpoint: 'newDufryServiceConnection'
-      resourceGroupName: 'kumaran'
-      containerRegistry: 'dufryACR'
-      actionType: 'show'
-      
   - task: Docker@2
+    displayName: BUILD AND PUSH IMAGE TO ACR
     inputs:
-      repository: 'pet-cleanic-app'
-      command: 'buildAndPush'
-      Dockerfile: $(dockerfilePath)
-      containerRegistry: dufryACR
+      command: buildAndPush
+      repository: $(imageRepository)
+      dockerfile: $(dockerfilePath)
+      containerRegistry: $(dockerRegistryServiceConnection)
+      tags: |
+        $(tag)
 
