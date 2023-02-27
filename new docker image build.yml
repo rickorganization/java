@@ -19,8 +19,6 @@ variables:
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
-  imageRepository: 'spring-petclinic'
-  dockerRegistryServiceConnection: '411ac591-98ce-4f24-af95-8c3d1fc82e60'
 
 
 pool:
@@ -48,15 +46,6 @@ steps:
       mavenAuthenticateFeed: false
       effectivePomSkip: false
   
-  - task: Docker@2
-    displayName: BUILD AND PUSH IMAGE TO ACR
-    inputs:
-      command: buildAndPush
-      repository: $(imageRepository)
-      dockerfile: $(dockerfilePath)
-      containerRegistry: $(dockerRegistryServiceConnection)
-      tags: |
-        $(tag)
   - task: Docker@2
     inputs:
       containerRegistry: 'DockerDufryServiceConnection'
