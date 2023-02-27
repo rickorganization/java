@@ -20,7 +20,7 @@ variables:
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
   imageRepository: 'spring-petclinic'
-  dockerRegistryServiceConnection: '189a7429-199e-40ad-b29b-f7b468f308ad'
+  dockerRegistryServiceConnection: '411ac591-98ce-4f24-af95-8c3d1fc82e60'
 
 
 pool:
