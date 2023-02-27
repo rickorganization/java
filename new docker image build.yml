@@ -19,6 +19,8 @@ variables:
   MAVEN_OPTS: '-Dmaven.repo.local=$(MAVEN_CACHE_FOLDER)'
   dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
+  target: $(build.artifactstagingdirectory)
+  artifact: AM
 
 
 pool:
@@ -52,4 +54,40 @@ steps:
       repository: 'seethai/dufry-registry'
       command: 'buildAndPush'
       Dockerfile: $(dockerfilePath)
+      tags: |
+          $(tag)
+  
+  - task: CmdLine@2
+    displayName: DOWNLOAD AND INSTALL AQUASEC TRIVY
+    inputs:
+      script: |
+       sudo apt-get install wget apt-transport-https gnupg lsb-release
+       wget -qO - https://aquasecurity.github.io/trivy-repo/deb/public.key | sudo apt-key add -
+       echo deb https://aquasecurity.github.io/trivy-repo/deb $(lsb_release -sc) main | sudo tee -a /etc/apt/sources.list.d/trivy.list
+       sudo apt-get update
+       sudo apt-get install trivy
+       trivy -v
+       pwd
+  - task: CmdLine@2
+    displayName: RUN AQUASEC TRIVY SCAN AND COPY TO ARTIFACTS STAGING DIRECTORY
+    inputs:
+      script: |
+        trivy image --exit-code 0 --severity LOW,MEDIUM $(containerRegistry)/$(imageRepository):$(tag) > low-med.txt
+        trivy image --exit-code 1 --severity HIGH,CRITICAL $(containerRegistry)/$(imageRepository):$(tag) > high-critical.txt
+        ls -l
+        cp -rvf *.txt $(target)
+  
+  - task: PublishBuildArtifacts@1
+    displayName: PUBLISH ARTIFACTS
+    inputs:
+      targetPath: '$(target)'
+      artifactName: '$(artifact)'
+
+  - task: DownloadBuildArtifacts@1
+    displayName: DOWNLOAD ARTIFACTS
+    inputs:
+      buildType: 'current'
+      downloadType: 'single'
+      downloadPath: '$(System.ArtifactsDirectory)'
+
 
