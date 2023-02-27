@@ -45,10 +45,14 @@ steps:
       mavenAuthenticateFeed: false
       effectivePomSkip: false
   
-  - task: Docker@1
+  - task: Docker@2
+    displayName: Build and push anf image to container registry
     inputs:
-      azureSubscriptionEndpoint: dufryTest-ServiceConnection
-      azureContainerRegistry: dufryACR
-      repository: 'pet-cleanic-app'
-      command: 'Push an image'
-      Dockerfile: "$(dockerfilePath)"
+      command: buildAndPush
+      repository: $(imageRepository)
+      dockerfile: $(dockerfilePath)
+      containerRegistry: dufryACR
+      arguments: --build-arg profile=$(profile)
+      tags: |
+        $(version)
+
